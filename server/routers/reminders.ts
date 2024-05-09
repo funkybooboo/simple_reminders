@@ -1,52 +1,76 @@
 import { Router } from "express";
 import CreateReminderDto from "../dtos/createReminder";
-import Reminder from "../models/reminder";
 import UpdateReminderDto from "../dtos/updateReminder";
+import { Reminder, validator } from "../models/reminder";
 
 const router = Router();
 
-const reminders: Reminder[] = []; // replace with database
-
-router.get('/', (request, response) => {
-    response.status(200).send(reminders);
+router.get('/', async (request, response) => {
+    try {
+        const reminders = await Reminder.find().sort({_id: 1});
+        response.status(200).json(reminders);
+    } catch (error) {
+        response.status(500).send('Internal Server Error');
+    }
 });
 
-router.get('/:id', (request, response) => {
-    const reminder = reminders.find(reminder => reminder.id + '' === request.params.id);
-    if (!reminder) {
-        response.status(400).send('Invalid ID');
+router.get('/:id', async (request, response) => {
+    try {
+        const reminder = await Reminder.findById(request.params.id);
+        if (!reminder) {
+            response.status(404).send('Reminder not found');
+            return;
+        }
+        response.status(200).json(reminder);
+    } catch (error) {
+        response.status(500).send('Internal Server Error');
+    }
+});
+
+router.post('/', async (request, response) => {
+    const { error } = validator(request.body as CreateReminderDto);
+    if (error) {
+        response.status(400).send(error.details[0].message);
         return;
     }
-    response.status(200).send(reminder);
+    try {
+        const reminder = new Reminder(request.body);
+        await reminder.save();
+        response.status(201).json(reminder);
+    } catch (error) {
+        response.status(500).send('Internal Server Error');
+    }
 });
 
-router.post('/', (request, response) => {
-    const { title } = request.body as CreateReminderDto;
-    const reminder = new Reminder(title);
-    reminders.push(reminder);
-    response.status(201).send(reminder);
-});
-
-router.put('/', (request, response) => {
-    const newReminder = request.body as UpdateReminderDto;
-    if (!newReminder || !(newReminder instanceof Reminder)) {
-        response.status(400).send('Invalid Request');
+router.put('/:id', async (request, response) => {
+    const { error } = validator(request.body as UpdateReminderDto);
+    if (error) {
+        response.status(400).send(error.details[0].message);
         return;
     }
-    const index = reminders.findIndex(reminder => reminder.id === newReminder.id);
-    reminders[index] = newReminder;
-    response.status(200).send(newReminder);
+    try {
+        const reminder = await Reminder.findByIdAndUpdate(request.params.id, request.body, { new: true });
+        if (!reminder) {
+            response.status(404).send('Reminder not found');
+            return;
+        }
+        response.status(200).json(reminder);
+    } catch (error) {
+        response.status(500).send('Internal Server Error');
+    }
 });
 
-router.delete('/:id', (request, response) => {
-    const index = reminders.findIndex(reminder => reminder.id + '' === request.params.id);
-    if (!index) {
-        response.status(400).send('Invalid ID');
-        return;
+router.delete('/:id', async (request, response) => {
+    try {
+        const reminder = await Reminder.findByIdAndDelete(request.params.id);
+        if (!reminder) {
+            response.status(404).send('Reminder not found');
+            return;
+        }
+        response.status(200).json(reminder);
+    } catch (error) {
+        response.status(500).send('Internal Server Error');
     }
-    const reminder = reminders[index];
-    reminders.splice(index, 1);
-    response.status(200).send(reminder);
 });
 
 export default router;

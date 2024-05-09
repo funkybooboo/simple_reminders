@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-//import logo from './logo.svg';
 import './App.css';
 import ReminderList from "./components/ReminderList";
 import Reminder from "./models/reminder";
@@ -17,11 +16,13 @@ function App(): JSX.Element {
         setReminders(reminders);
     }
 
-    const removeReminder = (id: number) => {
+    const removeReminder = async (id: number) => {
+        await reminderService.removeReminder(id);
         setReminders(reminders.filter(reminder => reminder.id !== id));
     }
 
     const removeAllReminders = () => {
+        reminders.forEach(reminder => reminderService.removeReminder(reminder.id));
         setReminders([]);
     }
 

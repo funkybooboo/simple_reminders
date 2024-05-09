@@ -1,23 +1,28 @@
-import axios from 'axios'; // axois comes with definition files for ts
+import axios from 'axios'; // axois comes with ts definition files
 import Reminder from "../models/reminder";
 
 class ReminderService {
     http = axios.create({
-        baseURL: "https://jsonplaceholder.typicode.com/"
+        baseURL: "http://localhost:8000"
     });
 
     async getReminders() {
-        const response = await this.http.get<Reminder[]>('/todos');
+        const response = await this.http.get<Reminder[]>('/reminders');
         return response.data;
     }
 
     async addReminder(title: string) {
-        const response = await this.http.post<Reminder>('/todos', {title});
+        const response = await this.http.post<Reminder>('/reminders', {title});
         return response.data;
     }
 
     async removeReminder(id: number) {
-        const response = await this.http.delete<Reminder>('/todos' + id);
+        const response = await this.http.delete<Reminder>('/reminders' + id);
+        return response.data;
+    }
+
+    async editReminder(reminder: Reminder) {
+        const response = await this.http.put<Reminder>('/reminders', reminder);
         return response.data;
     }
 }
