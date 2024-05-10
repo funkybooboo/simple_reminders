@@ -12,30 +12,50 @@ function App(): JSX.Element {
     }, []);
 
     const loadReminders = async () => {
-        const reminders = await reminderService.getReminders();
-        setReminders(reminders);
-    }
-
-    const removeReminder = async (id: number) => {
-        await reminderService.removeReminder(id);
-        setReminders(reminders.filter(reminder => reminder.id !== id));
-    }
-
-    const removeAllReminders = () => {
-        reminders.forEach(reminder => reminderService.removeReminder(reminder.id));
-        setReminders([]);
+        try {
+            const reminders = await reminderService.getReminders();
+            setReminders(reminders as Reminder[]);
+        } catch (error) {
+            console.log("Error loading reminders:", error);
+            // Handle error appropriately, such as displaying an error message to the user
+        }
     }
 
     const addReminder = async (title: string) => {
-        const newReminder = await reminderService.addReminder(title);
-        setReminders([newReminder, ...reminders]);
+        try {
+            const newReminder = await reminderService.addReminder(title);
+            setReminders([newReminder as Reminder, ...reminders]);
+        } catch (error) {
+            console.log("Error adding reminder:", error);
+            // Handle error appropriately, such as displaying an error message to the user
+        }
+    }
+
+    const removeReminder = async (id: number) => {
+        try {
+            await reminderService.removeReminder(id);
+            setReminders(reminders.filter(reminder => reminder.id !== id));
+        } catch (error) {
+            console.log("Error removing reminder:", error);
+            // Handle error appropriately, such as displaying an error message to the user
+        }
+    }
+
+    const removeAllReminders = async () => {
+        try {
+            await Promise.all(reminders.map(reminder => reminderService.removeReminder(reminder.id)));
+            setReminders([]);
+        } catch (error) {
+            console.log("Error removing reminders:", error);
+            // Handle error appropriately, such as displaying an error message to the user
+        }
     }
 
     return (
         <div className="App">
             <NewReminder onAddReminder={addReminder}/>
             <ReminderList reminders={reminders} onRemoveReminder={removeReminder} />
-            <button onClick={() => removeAllReminders()} className="btn btn-danger mx-2 rounded-pill">Delete All</button>
+            <button onClick={removeAllReminders} className="btn btn-danger mx-2 rounded-pill">Delete All</button>
         </div>
     );
 }

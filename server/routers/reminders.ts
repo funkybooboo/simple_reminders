@@ -6,6 +6,7 @@ import { Reminder, validator } from "../models/reminder";
 const router = Router();
 
 router.get('/', async (request, response) => {
+    console.log('GET');
     try {
         const reminders = await Reminder.find().sort({_id: 1});
         response.status(200).json(reminders);
@@ -15,6 +16,7 @@ router.get('/', async (request, response) => {
 });
 
 router.get('/:id', async (request, response) => {
+    console.log('GET');
     try {
         const reminder = await Reminder.findById(request.params.id);
         if (!reminder) {
@@ -28,6 +30,7 @@ router.get('/:id', async (request, response) => {
 });
 
 router.post('/', async (request, response) => {
+    console.log('POST');
     const { error } = validator(request.body as CreateReminderDto);
     if (error) {
         response.status(400).send(error.details[0].message);
@@ -43,6 +46,7 @@ router.post('/', async (request, response) => {
 });
 
 router.put('/:id', async (request, response) => {
+    console.log('PUT');
     const { error } = validator(request.body as UpdateReminderDto);
     if (error) {
         response.status(400).send(error.details[0].message);
@@ -61,6 +65,7 @@ router.put('/:id', async (request, response) => {
 });
 
 router.delete('/:id', async (request, response) => {
+    console.log('DELETE');
     try {
         const reminder = await Reminder.findByIdAndDelete(request.params.id);
         if (!reminder) {

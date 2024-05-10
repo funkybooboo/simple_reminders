@@ -11,8 +11,9 @@ function ReminderList({reminders, onRemoveReminder}: ReminderListProps): JSX.Ele
         <ul className='list-group'>
             {
                 reminders.map(reminder =>
-                    <li className='list-group-item' key={reminder.id}>
+                    <li key={reminder.id} className='list-group-item'>
                         {reminder.title}
+                        <button className="btn btn-outline-success mx-2 rounded-pill"></button>
                         <button onClick={() => onRemoveReminder(reminder.id)} className="btn btn-outline-danger mx-2 rounded-pill">Delete</button>
                     </li>)
             }
