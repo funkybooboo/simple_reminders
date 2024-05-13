@@ -4,6 +4,7 @@ import ReminderList from "./components/ReminderList";
 import Reminder from "./models/reminder";
 import reminderService from "./services/reminder";
 import NewReminder from "./components/NewReminder";
+import reminder from "./services/reminder";
 
 function App() {
     const [reminders, setReminders] = useState<Reminder[]>([]);
@@ -31,6 +32,26 @@ function App() {
         }
     }
 
+    const editReminder = async (reminder: Reminder) => {
+        console.log(reminder);
+        try {
+            const updatedReminder = await reminderService.editReminder(reminder);
+
+            const index = reminders.findIndex(reminder => reminder._id === reminder._id);
+
+            if (index !== -1) {
+                const updatedReminders = [...reminders];
+                updatedReminders[index] = updatedReminder;
+                setReminders(updatedReminders);
+            } else {
+                console.error('Reminder not found in the list.');
+            }
+        } catch (error) {
+            console.log("Error editing reminder:", error);
+            // Handle error appropriately, such as displaying an error message to the user
+        }
+    }
+
     const removeReminder = async (_id: string) => {
         try {
             await reminderService.removeReminder(_id);
@@ -54,7 +75,7 @@ function App() {
     return (
         <div className="App">
             <NewReminder onAddReminder={addReminder}/>
-            <ReminderList reminders={reminders} onRemoveReminder={removeReminder} />
+            <ReminderList reminders={reminders} onRemoveReminder={removeReminder} onEditReminder={editReminder} />
             <button onClick={removeAllReminders} className="btn btn-danger mx-2 rounded-pill">Delete All</button>
         </div>
     );

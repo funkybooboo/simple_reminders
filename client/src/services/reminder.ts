@@ -1,5 +1,6 @@
 import axios, { AxiosResponse } from 'axios';
 import Reminder from "../models/reminder";
+import ReminderDto from "../models/ReminderDto";
 
 class ReminderService {
     http = axios.create({
@@ -37,7 +38,8 @@ class ReminderService {
 
     async editReminder(reminder: Reminder): Promise<Reminder> {
         try {
-            const response: AxiosResponse<Reminder> = await this.http.put<Reminder>('reminders/' + reminder._id, reminder);
+            const reminderDto: ReminderDto = {title: reminder.title};
+            const response: AxiosResponse<Reminder> = await this.http.put<Reminder>('reminders/' + reminder._id, reminderDto);
             return response.data;
         } catch (error) {
             console.error("Error editing reminder:", error);
