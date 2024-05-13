@@ -5,7 +5,7 @@ import Reminder from "./models/reminder";
 import reminderService from "./services/reminder";
 import NewReminder from "./components/NewReminder";
 
-function App(): JSX.Element {
+function App() {
     const [reminders, setReminders] = useState<Reminder[]>([]);
     useEffect(() => {
         loadReminders();
@@ -31,10 +31,10 @@ function App(): JSX.Element {
         }
     }
 
-    const removeReminder = async (id: number) => {
+    const removeReminder = async (_id: string) => {
         try {
-            await reminderService.removeReminder(id);
-            setReminders(reminders.filter(reminder => reminder.id !== id));
+            await reminderService.removeReminder(_id);
+            setReminders(reminders.filter(reminder => reminder._id !== _id));
         } catch (error) {
             console.log("Error removing reminder:", error);
             // Handle error appropriately, such as displaying an error message to the user
@@ -43,7 +43,7 @@ function App(): JSX.Element {
 
     const removeAllReminders = async () => {
         try {
-            await Promise.all(reminders.map(reminder => reminderService.removeReminder(reminder.id)));
+            await Promise.all(reminders.map(reminder => reminderService.removeReminder(reminder._id)));
             setReminders([]);
         } catch (error) {
             console.log("Error removing reminders:", error);

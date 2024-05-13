@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import Reminder from "../models/reminder";
 
 class ReminderService {
@@ -26,9 +26,9 @@ class ReminderService {
         }
     }
 
-    async removeReminder(id: number): Promise<void> {
+    async removeReminder(_id: string): Promise<void> {
         try {
-            await this.http.delete<void>('reminders/' + id);
+            await this.http.delete<void>('reminders/' + _id);
         } catch (error) {
             console.error("Error removing reminder:", error);
             throw error;
@@ -37,7 +37,7 @@ class ReminderService {
 
     async editReminder(reminder: Reminder): Promise<Reminder> {
         try {
-            const response: AxiosResponse<Reminder> = await this.http.put<Reminder>('reminders/' + reminder.id, reminder);
+            const response: AxiosResponse<Reminder> = await this.http.put<Reminder>('reminders/' + reminder._id, reminder);
             return response.data;
         } catch (error) {
             console.error("Error editing reminder:", error);
@@ -46,4 +46,5 @@ class ReminderService {
     }
 }
 
-export default new ReminderService();
+const reminderServiceInstance = new ReminderService();
+export default reminderServiceInstance;

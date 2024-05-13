@@ -1,4 +1,5 @@
+
 export default interface Reminder {
-    id: number;
+    _id: string;
     title: string;
 }
