@@ -1,4 +1,4 @@
-# Project Title
+# Simple Reminders
 
 
 ## License
